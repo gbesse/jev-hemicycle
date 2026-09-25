@@ -1,6 +1,6 @@
 {
   "name": "@gbesse/jev-hemicycle",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Track parliamentary documents that materially affect a declared topic.",
   "type": "module",
   "license": "MIT",
@@ -25,6 +25,9 @@
     "typecheck": "tsc --noEmit --strict --target ES2022 --module NodeNext docs/public-api-types.mts",
     "test": "node --test",
     "demo": "node examples/demo.mjs"
+  },
+  "dependencies": {
+    "fast-xml-parser": "5.11.1"
   },
   "devDependencies": {
     "typescript": "5.9.3"

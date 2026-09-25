@@ -2,9 +2,19 @@
 
 **Track parliamentary documents that materially affect a declared topic.**
 
-[![Tests](https://github.com/gbesse/jev-hemicycle/actions/workflows/test.yml/badge.svg)](https://github.com/gbesse/jev-hemicycle/actions/workflows/test.yml) [MIT](LICENSE) · Node.js 22+ · Public alpha
+[![Tests](https://github.com/gbesse/jev-hemicycle/actions/workflows/test.yml/badge.svg)](https://github.com/gbesse/jev-hemicycle/actions/workflows/test.yml) [MIT](LICENSE) · Node.js 22+ · v0.2.0
 
 Jev Hémicycle evaluates new amendments, debates and votes against a narrow monitoring topic, emitting transitions only when relevance crosses configured hysteresis thresholds.
+
+It now fetches and normalizes the official Assemblée nationale parliamentary-publications RSS feed directly. Links
+are restricted to official HTTPS hosts, duplicate GUIDs are removed, markup is stripped and callers can cap each fetch.
+
+```js
+import { fetchAssemblyDocuments, evaluateDocument } from "@gbesse/jev-hemicycle";
+
+const documents = await fetchAssemblyDocuments({ limit: 10 });
+const result = await evaluateDocument(documents[0], topic, provider);
+```
 
 ## Try it in 30 seconds
 
@@ -34,7 +44,8 @@ The library keeps identifiers, dates, arithmetic and thresholds in ordinary code
 
 ## Boundaries
 
-It does not scrape the Assemblée nationale in this first release or summarize legal effects. Callers provide normalized, sourced parliamentary documents.
+It reads the Assemblée nationale's official RSS metadata and description; it does not crawl linked pages or summarize
+legal effects. A feed item signals possible relevance, not applicable law.
 
 Jev is strongest in English; French cases need evaluation on representative labels. It can read instructions literally, struggle with negations, dates and arithmetic, and degrade with irrelevant state. This project makes no live quality benchmark claim.
 

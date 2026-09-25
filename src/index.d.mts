@@ -1,5 +1,20 @@
 // Purpose: Describe parliamentary documents and monitored-topic transitions.
 import type { JevProvider } from "./jev.mjs";
+export const ASSEMBLY_FEED: "https://www2.assemblee-nationale.fr/feeds/detail/documents-parlementaires";
+export interface ParliamentaryDocument {
+  id: string;
+  kind: "parliamentary-publication";
+  title: string;
+  text: string;
+  sourceUrl: string;
+  date: string | null;
+  source: "Assemblée nationale";
+}
+export function fetchAssemblyDocuments(options?: {
+  limit?: number;
+  fetchImpl?: typeof fetch;
+  timeoutMs?: number;
+}): Promise<ParliamentaryDocument[]>;
 export function document(input: any): {
   id: string;
   kind: string;
