@@ -1,22 +1,12 @@
 # Jev Hémicycle
 
-**Track parliamentary documents that materially affect a declared topic.**
+**Suit les documents parlementaires qui affectent matériellement un sujet déclaré.**
 
-[![Tests](https://github.com/gbesse/jev-hemicycle/actions/workflows/test.yml/badge.svg)](https://github.com/gbesse/jev-hemicycle/actions/workflows/test.yml) [MIT](LICENSE) · Node.js 22+ · v0.2.0
+[![Tests](https://github.com/gbesse/jev-hemicycle/actions/workflows/test.yml/badge.svg)](https://github.com/gbesse/jev-hemicycle/actions/workflows/test.yml) [MIT](LICENSE) · Node.js 22+ · v0.2.1 · Documentation française
 
-Jev Hémicycle evaluates new amendments, debates and votes against a narrow monitoring topic, emitting transitions only when relevance crosses configured hysteresis thresholds.
+Jev Hémicycle récupère et normalise le flux officiel des publications parlementaires de l’Assemblée nationale. Il évalue amendements, débats et votes par rapport à un sujet précis et n’émet une transition qu’au franchissement des seuils configurés.
 
-It now fetches and normalizes the official Assemblée nationale parliamentary-publications RSS feed directly. Links
-are restricted to official HTTPS hosts, duplicate GUIDs are removed, markup is stripped and callers can cap each fetch.
-
-```js
-import { fetchAssemblyDocuments, evaluateDocument } from "@gbesse/jev-hemicycle";
-
-const documents = await fetchAssemblyDocuments({ limit: 10 });
-const result = await evaluateDocument(documents[0], topic, provider);
-```
-
-## Try it in 30 seconds
+## Démarrage rapide
 
 ```sh
 git clone https://github.com/gbesse/jev-hemicycle.git
@@ -25,38 +15,46 @@ npm install
 npm run demo
 ```
 
-The demo uses synthetic fixture probabilities and makes no network call. They are examples, not measured Jev performance.
+La démonstration utilise uniquement des données et probabilités synthétiques. Elle n’effectue aucun appel réseau et ne constitue pas une mesure de qualité de Jev.
 
-## Call real Jev
+## Utilisation de la bibliothèque
+
+Importez les fonctions métier depuis `@gbesse/jev-hemicycle`. Fournissez soit `createJevClient()` depuis l’export `./jev`, soit `createFakeProvider()` pour les tests hors ligne.
+
+Les noms de l’API JavaScript restent stables pour préserver la compatibilité avec les versions précédentes. La documentation, les exemples et les explications destinées aux utilisateurs sont en français.
+
+## Frontière de décision
+
+Les identifiants, dates, dédoublonnages, hôtes autorisés et seuils d’hystérésis restent dans le code. Jev évalue uniquement la pertinence sémantique du document pour le sujet surveillé.
+
+La question exacte envoyée à Jev est versionnée dans [`src/index.mjs`](src/index.mjs). Les identifiants, dates, calculs, filtres, seuils et transitions d’état restent gérés par du code ordinaire.
+
+## Sources
+
+- [https://data.assemblee-nationale.fr](https://data.assemblee-nationale.fr)
+- [https://github.com/gbesse/semantic-watch](https://github.com/gbesse/semantic-watch)
+
+Conservez l’attribution amont, les identifiants d’origine, les URL de source et les dates de récupération avec chaque enregistrement dérivé.
+
+## Appels Jev réels
+
+Les appels réels sont facultatifs et payants. Le client fixe le modèle `jev-1.13.0`, valide l’identité du modèle et toutes les probabilités, refuse les redirections, ne retente que les erreurs réseau et les réponses HTTP 429/529, puis bloque les requêtes dépassant une estimation prudente de 24 000 jetons.
 
 ```sh
-export TYPESAFE_API_KEY=...
-node -e "import('./src/jev.mjs').then(({createJevClient}) => console.log(Boolean(createJevClient())))"
+TYPESAFE_API_KEY=... node scripts/live-smoke.mjs
 ```
 
-Real requests are paid and sent to `https://api.typesafe.ai/v1/systemone`. The model is pinned to `jev-1.13.0`, response types and model identity are validated, redirects are rejected, and state above the conservative 24,000-token estimate is refused.
-
-An opt-in `TYPESAFE_API_KEY=... node scripts/live-smoke.mjs` command makes one synthetic request and prints usage. It is never run by CI.
-
-## How it decides
-
-The library keeps identifiers, dates, arithmetic and thresholds in ordinary code. Jev receives only the bounded semantic question shown in [docs/how-it-decides.md](docs/how-it-decides.md). Low-confidence results are marked for review; callers own every resulting action.
-
-## Boundaries
-
-It reads the Assemblée nationale's official RSS metadata and description; it does not crawl linked pages or summarize
-legal effects. A feed item signals possible relevance, not applicable law.
-
-Jev is strongest in English; French cases need evaluation on representative labels. It can read instructions literally, struggle with negations, dates and arithmetic, and degrade with irrelevant state. This project makes no live quality benchmark claim.
+N’envoyez jamais de secret, de donnée personnelle ni de dossier sensible non expurgé. Évaluez le comportement sur un jeu représentatif de cas français avant tout usage opérationnel.
 
 ## Validation
 
-`npm run check`, `npm run typecheck`, `npm test`, and `npm run demo` run locally and in CI on Node.js 22 and 24.
+```sh
+npm run check
+npm run typecheck
+npm test
+npm run demo
+```
 
-## Related projects
+La CI exécute ces vérifications sous Node.js 22 et 24.
 
-- [DecisionPacks](https://github.com/gbesse/decisionpacks) for versioned decision contracts
-- [Semantic Watch](https://github.com/gbesse/semantic-watch) for state transitions
-- [Meaning Diff](https://github.com/gbesse/meaning-diff) for semantic change review
-
-Independent project; not affiliated with TypeSafe AI. See the [Jev API documentation](https://docs.typesafe.ai/api) and [jev-1.13 model limitations](https://docs.typesafe.ai/model-jaggedness/jev-1.13).
+Projet indépendant, sans affiliation avec TypeSafe AI ni avec l’administration française. Consultez la [documentation de l’API Jev](https://docs.typesafe.ai/api) et les [limites du modèle](https://docs.typesafe.ai/model-jaggedness/jev-1.13).

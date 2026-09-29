@@ -1,4 +1,4 @@
-// Purpose: Fetch official Assemblée nationale publications and evaluate them against monitored topics with hysteresis.
+// Objectif : implémenter la frontière de décision métier propre au dépôt.
 import { XMLParser } from "fast-xml-parser";
 
 export const ASSEMBLY_FEED =

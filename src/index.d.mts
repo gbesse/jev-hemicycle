@@ -1,4 +1,4 @@
-// Purpose: Describe parliamentary documents and monitored-topic transitions.
+// Objectif : décrire les types de l’API métier publique.
 import type { JevProvider } from "./jev.mjs";
 export const ASSEMBLY_FEED: "https://www2.assemblee-nationale.fr/feeds/detail/documents-parlementaires";
 export interface ParliamentaryDocument {

@@ -1,4 +1,4 @@
-// Purpose: Verify parliamentary relevance hysteresis.
+// Objectif : vérifier les règles déterministes et les décisions sémantiques soumises à revue.
 import test from "node:test";
 import assert from "node:assert/strict";
 import {
