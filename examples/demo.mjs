@@ -1,4 +1,5 @@
 // Objectif : démontrer la frontière de décision sans appel réseau.
+import assert from "node:assert/strict";
 import { evaluateDocument } from "../src/index.mjs";
 import { createFakeProvider } from "../src/jev.mjs";
 const p = createFakeProvider(() => ({
@@ -6,16 +7,19 @@ const p = createFakeProvider(() => ({
   answers: { relevant: { type: "noul", noul: 0.91 } },
   usage: { input_tokens: 80, output_tokens: 0 },
 }));
-console.log(
-  await evaluateDocument(
-    {
-      id: "amdt-42",
-      kind: "amendment",
-      title: "Repairability",
-      text: "Creates a repairability obligation for household appliances.",
-      sourceUrl: "https://example.test/amdt-42",
-    },
-    { id: "repair", description: "Right to repair electronic devices" },
-    p,
-  ),
+const resultat = await evaluateDocument(
+  {
+    id: "amdt-42",
+    kind: "amendment",
+    title: "Réparabilité",
+    text: "Crée une obligation de réparabilité pour les appareils ménagers.",
+    sourceUrl: "https://example.test/amdt-42",
+  },
+  {
+    id: "repair",
+    description: "Droit à la réparation des appareils électroniques",
+  },
+  p,
 );
+assert.equal(resultat.state, "relevant");
+console.log(JSON.stringify(resultat, null, 2));
