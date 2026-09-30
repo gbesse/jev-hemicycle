@@ -2,7 +2,7 @@
 
 **Suit les documents parlementaires qui affectent matériellement un sujet déclaré.**
 
-[![Tests](https://github.com/gbesse/jev-hemicycle/actions/workflows/test.yml/badge.svg)](https://github.com/gbesse/jev-hemicycle/actions/workflows/test.yml) [MIT](LICENSE) · Node.js 22+ · v0.2.2 · Documentation française
+[![Tests](https://github.com/gbesse/jev-hemicycle/actions/workflows/test.yml/badge.svg)](https://github.com/gbesse/jev-hemicycle/actions/workflows/test.yml) [MIT](LICENSE) · Node.js 22+ · v0.2.3 · Documentation française
 
 Jev Hémicycle récupère et normalise le flux officiel des publications parlementaires de l’Assemblée nationale. Il évalue amendements, débats et votes par rapport à un sujet précis et n’émet une transition qu’au franchissement des seuils configurés.
 
@@ -54,10 +54,20 @@ console.log(JSON.stringify(resultat, null, 2));
 Lancez-le avec :
 
 ```sh
-npm run demo
+npm run demo:principal
 ```
 
 Résultat à repérer : `state: relevant`.
+
+### Cas limite à tester
+
+La bande d’hystérésis conserve l’état précédent lorsque le signal est incertain. Le code se trouve dans [`examples/cas-limite.mjs`](examples/cas-limite.mjs).
+
+```sh
+npm run demo:limite
+```
+
+Résultat à repérer : `state: relevant · uncertain: true`. La commande `npm run demo` exécute les deux exemples.
 
 ## Utilisation de la bibliothèque
 
