@@ -107,11 +107,16 @@ export async function evaluateDocument(
   previous = "unknown",
   options = {},
 ) {
+  const on = options.onThreshold ?? 0.8, off = options.offThreshold ?? 0.2;
+  if (!Number.isFinite(on) || !Number.isFinite(off) || !(off >= 0 && off < on && on <= 1))
+    throw new TypeError("Seuils invalides / Thresholds must satisfy 0 <= off < on <= 1 / Umbrales no válidos");
+  if (!['unknown','relevant','irrelevant'].includes(previous))
+    throw new TypeError('État précédent invalide / Invalid previous state / Estado anterior no válido');
   const doc = document(input);
   if (!topic?.id || !topic?.description)
     throw new TypeError("topic needs id and description");
   const r = await provider.decide({
-    state: { document: doc, topic },
+    state: { document: doc, topic: structuredClone(topic) },
     questions: {
       relevant: {
         type: "noul",
@@ -124,11 +129,10 @@ export async function evaluateDocument(
       },
     },
   });
-  const p = r.answers.relevant.noul,
-    on = options.onThreshold ?? 0.8,
-    off = options.offThreshold ?? 0.2;
-  if (!(off >= 0 && off < on && on <= 1))
-    throw new TypeError("Thresholds must satisfy 0 <= off < on <= 1");
+  const answer = r?.answers?.relevant;
+  const p = answer?.noul;
+  if (answer?.type !== 'noul' || !Number.isFinite(p) || p < 0 || p > 1)
+    throw new TypeError('Probabilité hors contrat / Probability out of contract / Probabilidad fuera de contrato');
   let state = previous;
   if (p >= on) state = "relevant";
   else if (p <= off) state = "irrelevant";

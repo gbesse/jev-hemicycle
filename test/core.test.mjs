@@ -81,3 +81,12 @@ test("refuses non-official links and bad limits from the Assembly feed", async (
   );
   await assert.rejects(fetchAssemblyDocuments({ limit: 0 }), /between 1 and 50/);
 });
+
+test('bad thresholds and previous state spend no provider call',async()=>{
+ let calls=0;const provider={decide:async()=>{calls++;throw Error('must not call');}};
+ for(const options of [{onThreshold:NaN},{offThreshold:Infinity},{onThreshold:.1,offThreshold:.8}])await assert.rejects(evaluateDocument(d,t,provider,'unknown',options));
+ await assert.rejects(evaluateDocument(d,t,provider,'invented'));assert.equal(calls,0);
+});
+test('invalid probabilities cannot hold an apparently valid prior state',async()=>{
+ for(const value of [NaN,Infinity,-.1,1.1,true])await assert.rejects(evaluateDocument(d,t,{decide:async()=>({answers:{relevant:{type:'noul',noul:value}}})},'relevant'),/out of contract/);
+});

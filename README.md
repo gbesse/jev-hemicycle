@@ -116,3 +116,11 @@ npm run demo
 La CI exécute ces vérifications sous Node.js 22 et 24.
 
 Projet indépendant, sans affiliation avec TypeSafe AI ni avec l’administration française. Consultez la [documentation de l’API Jev](https://docs.typesafe.ai/api) et les [limites du modèle](https://docs.typesafe.ai/model-jaggedness/jev-1.13).
+
+## Hysteresis preflight / Prévalidation / Validación previa
+
+EN: Thresholds and previous state are now validated before any semantic call. Nonfinite/out-of-range replies fail instead of retaining a seemingly valid prior state with misleading uncertainty. Topic data is snapshotted before asynchronous evaluation. This validates the decision contract, not parliamentary facts, legal consequences or model quality.
+
+FR : Les seuils et l’état précédent sont désormais validés avant tout appel sémantique. Une réponse non finie/hors limites échoue au lieu de conserver un état apparemment valide et une incertitude trompeuse. Le sujet est capturé avant évaluation asynchrone. Cela valide le contrat de décision, pas les faits parlementaires, conséquences juridiques ou qualité du modèle.
+
+ES: Umbrales y estado anterior se validan antes de llamar. Respuestas no finitas/fuera de rango fallan en lugar de conservar un estado aparentemente válido e incertidumbre engañosa. Captura el tema antes de evaluar asíncronamente. Valida contrato de decisión, no hechos parlamentarios, consecuencias jurídicas ni calidad del modelo.
