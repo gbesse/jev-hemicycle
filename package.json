@@ -1,6 +1,6 @@
 {
   "name": "@gbesse/jev-hemicycle",
-  "version": "0.2.5",
+  "version": "0.3.0",
   "description": "Suit les documents parlementaires qui affectent matériellement un sujet déclaré.",
   "type": "module",
   "license": "MIT",

@@ -112,20 +112,24 @@ export async function evaluateDocument(
     throw new TypeError("Seuils invalides / Thresholds must satisfy 0 <= off < on <= 1 / Umbrales no válidos");
   if (!['unknown','relevant','irrelevant'].includes(previous))
     throw new TypeError('État précédent invalide / Invalid previous state / Estado anterior no válido');
+  const lang = options.lang ?? 'en';
+  const prompts = {
+    fr: {instructions:'Ce document parlementaire concerne-t-il matériellement le sujet suivi, sa mise en œuvre, son financement, ses bénéficiaires, ses obligations ou son abrogation ? Une simple coïncidence de mots-clés est fausse.', criteria:{true:'Affecte matériellement le sujet',false:'Lien accessoire ou absent'}},
+    en: {instructions:'Does this parliamentary document materially address the monitored topic, its implementation, funding, beneficiaries, obligations, or repeal? Mere keyword overlap is false.', criteria:{true:'Materially affects the topic',false:'Only incidental or unrelated'}},
+    es: {instructions:'¿Este documento parlamentario aborda materialmente el tema seguido, su aplicación, financiación, beneficiarios, obligaciones o derogación? La mera coincidencia de palabras clave es falsa.',criteria:{true:'Afecta materialmente al tema',false:'Relación incidental o inexistente'}},
+  };
+  if (!Object.hasOwn(prompts, lang)) throw new TypeError('Langue invalide / Invalid language / Idioma inválido: fr, en, es');
+  try { topic = structuredClone(topic); } catch { throw new TypeError('Sujet non copiable / Topic cannot be snapshotted / Tema no copiable'); }
   const doc = document(input);
   if (!topic?.id || !topic?.description)
     throw new TypeError("topic needs id and description");
   const r = await provider.decide({
-    state: { document: doc, topic: structuredClone(topic) },
+    state: { document: structuredClone(doc), topic: structuredClone(topic) },
     questions: {
       relevant: {
         type: "noul",
-        instructions:
-          "Does this parliamentary document materially address the monitored topic, its implementation, funding, beneficiaries, obligations, or repeal? Mere keyword overlap is false.",
-        criteria: {
-          true: "Materially affects the topic",
-          false: "Only incidental or unrelated",
-        },
+        instructions: prompts[lang].instructions,
+        criteria: { ...prompts[lang].criteria },
       },
     },
   });

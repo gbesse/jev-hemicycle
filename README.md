@@ -124,3 +124,10 @@ EN: Thresholds and previous state are now validated before any semantic call. No
 FR : Les seuils et l’état précédent sont désormais validés avant tout appel sémantique. Une réponse non finie/hors limites échoue au lieu de conserver un état apparemment valide et une incertitude trompeuse. Le sujet est capturé avant évaluation asynchrone. Cela valide le contrat de décision, pas les faits parlementaires, conséquences juridiques ou qualité du modèle.
 
 ES: Umbrales y estado anterior se validan antes de llamar. Respuestas no finitas/fuera de rango fallan en lugar de conservar un estado aparentemente válido e incertidumbre engañosa. Captura el tema antes de evaluar asíncronamente. Valida contrato de decisión, no hechos parlamentarios, consecuencias jurídicas ni calidad del modelo.
+
+
+FR : `evaluateDocument(..., previous, { lang: 'fr' })` propose des instructions sémantiques FR/EN/ES (défaut historique `en`) sans traduire le document ni le sujet. Le résultat conserve une copie de l’identité du sujet et du document antérieure à l’appel ; les mutations de l’appelant ou du fournisseur ne peuvent plus les réécrire pendant l’attente. Cela protège la cohérence des preuves déclarées, pas la pertinence réelle d’un document ni une interprétation juridique.
+
+EN: `evaluateDocument(..., previous, { lang: 'en' })` supports FR/EN/ES semantic instructions (existing default `en`) without translating the document or topic. Results retain topic identity and document copies from before the call; caller or provider mutations cannot rewrite them while awaiting a response. This protects declared-evidence consistency, not actual relevance or legal interpretation.
+
+ES: `evaluateDocument(..., previous, { lang: 'es' })` admite instrucciones semánticas FR/EN/ES (valor histórico `en`) sin traducir documentos ni temas. El resultado conserva copias previas del documento y la identidad del tema; las mutaciones del llamante o proveedor no las reescriben durante la espera. Protege la coherencia de pruebas declaradas, no la pertinencia real ni la interpretación jurídica.
