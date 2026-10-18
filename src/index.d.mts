@@ -28,7 +28,7 @@ export function evaluateDocument(
   topic: { id: string; description: string },
   provider: JevProvider,
   previous?: string,
-  options?: { onThreshold?: number; offThreshold?: number },
+  options?: { onThreshold?: number; offThreshold?: number; lang?: "fr" | "en" | "es" },
 ): Promise<any>;
 export function runCli(
   argv: string[],

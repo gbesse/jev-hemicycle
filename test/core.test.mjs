@@ -90,3 +90,19 @@ test('bad thresholds and previous state spend no provider call',async()=>{
 test('invalid probabilities cannot hold an apparently valid prior state',async()=>{
  for(const value of [NaN,Infinity,-.1,1.1,true])await assert.rejects(evaluateDocument(d,t,{decide:async()=>({answers:{relevant:{type:'noul',noul:value}}})},'relevant'),/out of contract/);
 });
+
+
+test('document and topic identity remain bound across caller and provider mutations',async()=>{
+ const input={...d},topic={...t};let release,entered;
+ const ready=new Promise(r=>{entered=r;}),gate=new Promise(r=>{release=r;});
+ const pending=evaluateDocument(input,topic,{async decide(request){entered();await gate;assert.equal(request.state.topic.id,'t');assert.equal(request.state.document.text,'x');request.state.document.text='provider mutation';request.state.topic.id='provider mutation';return {answers:{relevant:{type:'noul',noul:.9}}};}});
+ await ready;input.text='caller mutation';topic.id='another topic';release();
+ const result=await pending;assert.equal(result.topicId,'t');assert.equal(result.document.text,'x');assert.equal(input.text,'caller mutation');
+});
+test('localized semantic instructions preserve authored text and reject bad locale before dispatch',async()=>{
+ const seen=new Set();let calls=0;
+ const provider={async decide(request){calls++;seen.add(request.questions.relevant.instructions);assert.equal(request.state.document.text,d.text);assert.equal(request.state.topic.description,t.description);return {answers:{relevant:{type:'noul',noul:.5}}};}};
+ for(const lang of ['fr','en','es'])await evaluateDocument(d,t,provider,'unknown',{lang});assert.equal(seen.size,3);
+ await assert.rejects(evaluateDocument(d,t,provider,'unknown',{lang:'de'}),/Invalid language/);
+ await assert.rejects(evaluateDocument(d,{...t,callback(){}},provider),/snapshotted/);assert.equal(calls,3);
+});
