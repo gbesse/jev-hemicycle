@@ -69,6 +69,7 @@ test("fetches, normalizes, limits and deduplicates the official Assembly feed", 
       "https://www.assemblee-nationale.fr/dyn/17/textes/l17b1234_projet-loi",
     date: "2026-09-23T10:00:00.000Z",
     source: "Assemblée nationale",
+    truncation: { title: false, text: false },
   });
 });
 

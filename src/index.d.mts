@@ -7,7 +7,7 @@ export interface ParliamentaryDocument {
   title: string;
   text: string;
   sourceUrl: string;
-  date: string | null;
+  date: string | null; truncation: { title: boolean; text: boolean };
   source: "Assemblée nationale";
 }
 export function fetchAssemblyDocuments(options?: {
@@ -21,7 +21,7 @@ export function document(input: any): {
   title: string;
   text: string;
   sourceUrl: string;
-  date: string | null;
+  date: string | null; truncation: { title: boolean; text: boolean };
 };
 export function evaluateDocument(
   input: any,
