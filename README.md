@@ -131,3 +131,15 @@ FR : `evaluateDocument(..., previous, { lang: 'fr' })` propose des instructions 
 EN: `evaluateDocument(..., previous, { lang: 'en' })` supports FR/EN/ES semantic instructions (existing default `en`) without translating the document or topic. Results retain topic identity and document copies from before the call; caller or provider mutations cannot rewrite them while awaiting a response. This protects declared-evidence consistency, not actual relevance or legal interpretation.
 
 ES: `evaluateDocument(..., previous, { lang: 'es' })` admite instrucciones semánticas FR/EN/ES (valor histórico `en`) sin traducir documentos ni temas. El resultado conserva copias previas del documento y la identidad del tema; las mutaciones del llamante o proveedor no las reescriben durante la espera. Protege la coherencia de pruebas declaradas, no la pertinencia real ni la interpretación jurídica.
+## Troncature explicite / Explicit truncation / Truncado explícito
+
+**FR.** Les documents RSS exposent maintenant `truncation.title` et `truncation.text`. Un titre affiché à 1 000 caractères peut être tronqué alors que le contexte reste complet ; seul un texte limité à 20 000 caractères impose la revue. `evaluateDocument` conserve alors l’état précédent, retourne `probability: null`, `transition: null` et `reason: truncated_text`, sans appel Jev. Les GUID dépassant 500 caractères sont refusés au lieu de créer des collisions par troncature. L’absence de ce reçu sur un document fourni manuellement ne prouve pas sa complétude ; un extrait RSS n’est pas le texte parlementaire intégral.
+
+**EN.** RSS documents now expose `truncation.title` and `truncation.text`. A displayed title may be clipped to 1,000 characters while context remains complete; only text clipped to 20,000 characters forces review. `evaluateDocument` then preserves prior state and returns `probability: null`, `transition: null`, `reason: truncated_text`, without a Jev call. GUIDs longer than 500 characters fail instead of colliding after truncation. Missing receipts on manually supplied documents do not prove completeness; an RSS excerpt is not the full parliamentary text.
+
+**ES.** Los documentos RSS exponen `truncation.title` y `truncation.text`. Un título limitado a 1 000 caracteres puede estar cortado con contexto completo; solo texto limitado a 20 000 exige revisión. `evaluateDocument` conserva el estado anterior y devuelve `probability: null`, `transition: null`, `reason: truncated_text`, sin llamada Jev. GUID de más de 500 caracteres se rechazan, evitando colisiones por truncado. La ausencia del recibo en documentos manuales no demuestra integridad; un extracto RSS no es el texto parlamentario completo.
+
+```sh
+npm run demo:truncated
+```
+

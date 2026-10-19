@@ -63,17 +63,21 @@ export async function fetchAssemblyDocuments({
   for (const item of array(parsed?.rss?.channel?.item)) {
     const sourceUrl = officialAssemblyUrl(item.link);
     const id = plain(item.guid) || sourceUrl;
+    if (String(id).length > 500)
+      throw new TypeError('Identifiant RSS trop long ; aucune troncation silencieuse / RSS identifier too long; no silent truncation / Identificador RSS demasiado largo; sin truncado silencioso');
     if (seen.has(id)) continue;
     seen.add(id);
     const title = stripMarkup(item.title);
     if (!title) continue;
     const description = stripMarkup(item.description);
+    const fullText = `${title}\n${description}`;
     const parsedDate = item.pubDate ? new Date(plain(item.pubDate)) : null;
     documents.push({
-      id: String(id).slice(0, 500),
+      id: String(id),
       kind: "parliamentary-publication",
       title: title.slice(0, 1000),
-      text: `${title}\n${description}`.slice(0, 20_000),
+      text: fullText.slice(0, 20_000),
+      truncation: { title: title.length > 1000, text: fullText.length > 20_000 },
       sourceUrl,
       date:
         parsedDate && !Number.isNaN(parsedDate.valueOf())
@@ -91,6 +95,9 @@ export async function fetchAssemblyDocuments({
 export function document(input) {
   if (!input?.id || !input?.text || !input?.sourceUrl)
     throw new TypeError("document needs id, text and sourceUrl");
+  const truncation = input.truncation === undefined ? { title: false, text: false } : input.truncation;
+  if (!truncation || typeof truncation !== 'object' || Array.isArray(truncation) || typeof truncation.title !== 'boolean' || typeof truncation.text !== 'boolean')
+    throw new TypeError('Reçu de troncation invalide / Invalid truncation receipt / Recibo de truncado no válido');
   return {
     id: String(input.id),
     kind: String(input.kind || "document"),
@@ -98,6 +105,7 @@ export function document(input) {
     text: String(input.text),
     sourceUrl: String(input.sourceUrl),
     date: input.date || null,
+    truncation: { title: truncation.title, text: truncation.text },
   };
 }
 export async function evaluateDocument(
@@ -123,6 +131,10 @@ export async function evaluateDocument(
   const doc = document(input);
   if (!topic?.id || !topic?.description)
     throw new TypeError("topic needs id and description");
+  if (doc.truncation.text)
+    return { document: doc, topicId: topic.id, probability: null, state: previous,
+      transition: null, uncertain: true, requiresReview: true,
+      reason: 'truncated_text', deterministic: true };
   const r = await provider.decide({
     state: { document: structuredClone(doc), topic: structuredClone(topic) },
     questions: {
